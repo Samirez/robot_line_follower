@@ -14,7 +14,7 @@ serial.writeLine("" + (black_line))
 basic.forever(function () {
     current_surface_reading = pins.analogReadPin(AnalogPin.P1)
     serial.writeLine("" + (current_surface_reading))
-    if (current_surface_reading < black_line - 500) {
+    if (current_surface_reading < black_line - 800) {
         motobit.enable(MotorPower.On)
         motobit.setMotorSpeed(Motor.Left, MotorDirection.Reverse, 40)
         motobit.setMotorSpeed(Motor.Right, MotorDirection.Reverse, 40)
