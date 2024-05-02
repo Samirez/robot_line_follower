@@ -1,8 +1,11 @@
 input.onButtonPressed(Button.A, function () {
     black_Line_L = pins.analogReadPin(AnalogPin.P0)
+    black_Line_M = pins.analogReadPin(AnalogPin.P1)
     black_Line_R = pins.analogReadPin(AnalogPin.P2)
-    serial.writeLine("black_line_L_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P0)" + "," + "black_line_R_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P2)")
-    serial.writeLine("" + black_Line_L + "," + black_Line_R)
+    serial.writeLine("black_line_L_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P0)" + "," +
+    +"black_line_M_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P1)"+","+
+    "black_line_R_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P2)")
+    serial.writeLine("" + black_Line_L + "," +black_Line_M + "," + black_Line_R)
 })
 input.onGesture(Gesture.LogoUp, function () {
     motobit.enable(MotorPower.Off)
@@ -19,7 +22,9 @@ input.onButtonPressed(Button.B, function () {
         current_surface_reading_R = pins.analogReadPin(AnalogPin.P2)
         serial.writeLine("" + current_surface_reading_L + "," + current_surface_reading_R)
         motobit.enable(MotorPower.On)
-        if (current_surface_reading_L >= black_Line_L - 100 && current_surface_reading_R >= black_Line_R - 100) {
+        if (current_surface_reading_L >= black_Line_L - 100 
+        && current_surface_reading_R >= black_Line_R - 100
+        && current_surface_reading_M >= black_Line_M - 100) {
             motobit.setMotorSpeed(Motor.Left, MotorDirection.Forward, 50)
             motobit.setMotorSpeed(Motor.Right, MotorDirection.Forward, 50)
             basic.showLeds(`
@@ -99,17 +104,21 @@ input.onGesture(Gesture.ThreeG, function () {
 })
 let move_left = 0
 let current_surface_reading_R = 0
+let current_surface_reading_M = 0
 let current_surface_reading_L = 0
 let black_Line_R = 0
 let black_Line_L = 0
+let black_Line_M = 0
 serial.redirectToUSB()
 motobit.invert(Motor.Left, false)
 motobit.invert(Motor.Right, true)
 motobit.enable(MotorPower.Off)
 black_Line_L = pins.analogReadPin(AnalogPin.P0)
 black_Line_R = pins.analogReadPin(AnalogPin.P2)
-serial.writeLine("black_line_L_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P0)" + "," + "black_line_R_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P2)")
-serial.writeLine("" + black_Line_L + "," + black_Line_R)
+serial.writeLine("black_line_L_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P0)" + "," + 
+"black_Line_M_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P1" + "," +
+"black_line_R_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P2)")
+serial.writeLine("" + black_Line_L + "," +black_Line_M + "," + black_Line_R)
 basic.showLeds(`
     . . . . .
     . . . . .
