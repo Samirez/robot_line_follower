@@ -1,124 +1,79 @@
 input.onButtonPressed(Button.A, function () {
-    black_Line_L = pins.analogReadPin(AnalogPin.P0)
-    black_Line_M = pins.analogReadPin(AnalogPin.P1)
-    black_Line_R = pins.analogReadPin(AnalogPin.P2)
-    serial.writeLine("black_line_L_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P0)" + "," +
-    +"black_line_M_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P1)"+","+
-    "black_line_R_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P2)")
-    serial.writeLine("" + black_Line_L + "," +black_Line_M + "," + black_Line_R)
-})
-input.onGesture(Gesture.LogoUp, function () {
-    motobit.enable(MotorPower.Off)
-})
-input.onGesture(Gesture.ScreenUp, function () {
-    motobit.enable(MotorPower.On)
-})
-input.onGesture(Gesture.ScreenDown, function () {
-    motobit.enable(MotorPower.Off)
+    for (let i = 0; i <= 2; i++) {
+        black_Line[i] = pins.analogReadPin(pinsArray[i])
+    }
+    serial.writeLine("" + (`black_line_L: ${black_Line[0]},
+                    black_line_M: ${black_Line[1]},
+                    black_line_R: ${black_Line[2]}`))
 })
 input.onButtonPressed(Button.B, function () {
     while (true) {
-        current_surface_reading_L = pins.analogReadPin(AnalogPin.P0)
-        current_surface_reading_R = pins.analogReadPin(AnalogPin.P2)
-        serial.writeLine("" + current_surface_reading_L + "," + current_surface_reading_R)
+        for (let j = 0; j <= 2; j++) {
+            current_surface_reading[j] = pins.analogReadPin(pinsArray[j])
+        }
+        serial.writeLine("" + (`${current_surface_reading[0]}, ${current_surface_reading[1]}, ${current_surface_reading[2]}`))
         motobit.enable(MotorPower.On)
-        if (current_surface_reading_L >= black_Line_L - 100 
-        && current_surface_reading_R >= black_Line_R - 100
-        && current_surface_reading_M >= black_Line_M - 100) {
-            motobit.setMotorSpeed(Motor.Left, MotorDirection.Forward, 50)
-            motobit.setMotorSpeed(Motor.Right, MotorDirection.Forward, 50)
+        if (current_surface_reading[1] >= black_Line[1] - 100) {
+            motobit.setMotorSpeed(Motor.Left, motorDirection[0], motorSpeed[0])
+            motobit.setMotorSpeed(Motor.Right, motorDirection[0], motorSpeed[0])
             basic.showLeds(`
                 . . # . .
                 . # # # .
                 # . # . #
                 . . # . .
                 . . # . .
-                `)
-            basic.pause(10)
-        } else if (current_surface_reading_L >= black_Line_L - 100) {
-            motobit.setMotorSpeed(Motor.Left, MotorDirection.Forward, 40)
-            motobit.setMotorSpeed(Motor.Right, MotorDirection.Forward, 50)
+            `)
+        } else if (current_surface_reading[0] >= black_Line[0] - 100) {
+            motobit.setMotorSpeed(Motor.Left, motorDirection[0], motorSpeed[1])
+            motobit.setMotorSpeed(Motor.Right, motorDirection[0], motorSpeed[2])
             basic.showLeds(`
                 # # # . .
                 # # . . .
                 # . # . .
                 . . # . .
                 . . # . .
-                `)
-            basic.pause(10)
-        } else if (current_surface_reading_R >= black_Line_R - 100) {
-            motobit.setMotorSpeed(Motor.Left, MotorDirection.Forward, 50 + 5)
-            motobit.setMotorSpeed(Motor.Right, MotorDirection.Forward, 40)
+            `)
+        } else if (current_surface_reading[2] >= black_Line[2] - 100) {
+            motobit.setMotorSpeed(Motor.Left, motorDirection[0], motorSpeed[2])
+            motobit.setMotorSpeed(Motor.Right, motorDirection[0], motorSpeed[1])
             basic.showLeds(`
                 . . # # #
                 . . . # #
                 . . # . #
                 . . # . .
                 . . # . .
-                `)
-            basic.pause(10)
-            move_left = 0
+            `)
         } else {
-            motobit.setMotorSpeed(Motor.Left, MotorDirection.Reverse, 30)
-            motobit.setMotorSpeed(Motor.Right, MotorDirection.Reverse, 30)
+            motobit.setMotorSpeed(Motor.Left, motorDirection[1], motorSpeed[1])
+            motobit.setMotorSpeed(Motor.Right, motorDirection[1], motorSpeed[1])
             basic.showLeds(`
                 . . # . .
                 . . # . .
                 # . # . #
                 . # # # .
                 . . # . .
-                `)
-            basic.pause(15)
-            if (move_left < 3) {
-                motobit.setMotorSpeed(Motor.Left, MotorDirection.Forward, 40)
-                motobit.setMotorSpeed(Motor.Right, MotorDirection.Forward, 50 + move_left * 10)
-                basic.showLeds(`
-                    # # # . .
-                    # # . . .
-                    # . # . .
-                    . . # . .
-                    . . # . .
-                    `)
-                basic.pause(10)
-                move_left = move_left + 1
-            } else {
-                motobit.setMotorSpeed(Motor.Left, MotorDirection.Forward, 50)
-                motobit.setMotorSpeed(Motor.Right, MotorDirection.Forward, 40)
-                basic.showLeds(`
-                    . . # # #
-                    . . . # #
-                    . . # . #
-                    . . # . .
-                    . . # . .
-                    `)
-                basic.pause(10)
-                move_left = 0
-            }
+            `)
         }
-        motobit.enable(MotorPower.Off)
+        basic.pause(10)
     }
 })
-input.onGesture(Gesture.ThreeG, function () {
-    motobit.setMotorSpeed(Motor.Left, MotorDirection.Reverse, 100)
-    motobit.setMotorSpeed(Motor.Right, MotorDirection.Reverse, 100)
-})
-let move_left = 0
-let current_surface_reading_R = 0
-let current_surface_reading_M = 0
-let current_surface_reading_L = 0
-let black_Line_R = 0
-let black_Line_L = 0
-let black_Line_M = 0
+let current_surface_reading: number[] = []
+let black_Line: number[] = []
+black_Line = [0, 0, 0]
+current_surface_reading = [0, 0, 0]
+let pinsArray = [AnalogPin.P0, AnalogPin.P1, AnalogPin.P2]
+let motorSpeed = [30, 20, 40]
+let motorDirection = [MotorDirection.Forward, MotorDirection.Reverse]
 serial.redirectToUSB()
 motobit.invert(Motor.Left, false)
 motobit.invert(Motor.Right, true)
 motobit.enable(MotorPower.Off)
-black_Line_L = pins.analogReadPin(AnalogPin.P0)
-black_Line_R = pins.analogReadPin(AnalogPin.P2)
-serial.writeLine("black_line_L_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P0)" + "," + 
-"black_Line_M_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P1" + "," +
-"black_line_R_(i.e._Baseline_Value_of_Line_Following_Sensor_on_P2)")
-serial.writeLine("" + black_Line_L + "," +black_Line_M + "," + black_Line_R)
+for (let k = 0; k <= 2; k++) {
+    black_Line[k] = pins.analogReadPin(pinsArray[k])
+}
+serial.writeLine("" + (`black_line_L: ${black_Line[0]},
+                black_line_M: ${black_Line[1]},
+                black_line_R: ${black_Line[2]}`))
 basic.showLeds(`
     . . . . .
     . . . . .
